@@ -21,7 +21,7 @@ A modern age calculator Android app built with Python and Flet Framework featuri
 ```bash
 git clone https://github.com/virendracarpenter/age-calculator-flet.git
 cd age-calculator-flet
-pip install -r requirements.txt
+pip install .
 flet run
 ```
 
