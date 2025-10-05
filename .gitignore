@@ -64,3 +64,4 @@ Thumbs.db
 .coverage
 htmlcov/
 .pytest_cache/
+main.spec
