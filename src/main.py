@@ -22,6 +22,24 @@ def main(page: ft.Page):
     age_days = ft.Text("--", size=32)
     birthday_countdown = ft.Text("--", size=24, weight=ft.FontWeight.BOLD)
 
+    def calculate_next_birthday(birth_date, today):
+        try:
+            birth_date_this_year = birth_date.replace(year=today.year)
+        except ValueError:
+            # Handle leap year birthday in a non-leap year (Feb 29 -> Feb 28)
+            birth_date_this_year = birth_date.replace(year=today.year, day=28)
+
+        if today.date() > birth_date_this_year.date():
+            try:
+                next_birthday = birth_date.replace(year=today.year + 1)
+            except ValueError:
+                next_birthday = birth_date.replace(year=today.year + 1, day=28)
+        else:
+            next_birthday = birth_date_this_year
+
+        days_until = (next_birthday.date() - today.date()).days
+        return next_birthday, days_until
+
     def update_age(birth_date):
         today = datetime.now()
         delta = relativedelta(today, birth_date)
@@ -31,22 +49,7 @@ def main(page: ft.Page):
         age_days.value = f"{delta.days} days"
 
         # Calculate next birthday
-        try:
-            birth_date_this_year = birth_date.replace(year=today.year)
-        except ValueError:
-            # Handle leap year birthday in a non-leap year
-            birth_date_this_year = birth_date.replace(year=today.year, day=28)
-
-        if today.date() > birth_date_this_year.date():
-            try:
-                next_birthday = birth_date.replace(year=today.year + 1)
-            except ValueError:
-                # Handle leap year birthday in a non-leap year
-                next_birthday = birth_date.replace(year=today.year + 1, day=28)
-        else:
-            next_birthday = birth_date_this_year
-
-        days_until_birthday = (next_birthday.date() - today.date()).days
+        next_birthday, days_until_birthday = calculate_next_birthday(birth_date, today)
 
         if days_until_birthday == 0:
             birthday_countdown.value = "Happy Birthday! 🎉"
