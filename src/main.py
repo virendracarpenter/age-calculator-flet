@@ -20,6 +20,7 @@ def main(page: ft.Page):
     age_years = ft.Text("--", size=48, weight=ft.FontWeight.BOLD)
     age_months = ft.Text("--", size=32)
     age_days = ft.Text("--", size=32)
+    birthday_countdown = ft.Text("--", size=24, weight=ft.FontWeight.BOLD)
 
     def update_age(birth_date):
         today = datetime.now()
@@ -28,6 +29,30 @@ def main(page: ft.Page):
         age_years.value = f"{delta.years}"
         age_months.value = f"{delta.months} months"
         age_days.value = f"{delta.days} days"
+
+        # Calculate next birthday
+        try:
+            birth_date_this_year = birth_date.replace(year=today.year)
+        except ValueError:
+            # Handle leap year birthday in a non-leap year
+            birth_date_this_year = birth_date.replace(year=today.year, day=28)
+
+        if today.date() > birth_date_this_year.date():
+            try:
+                next_birthday = birth_date.replace(year=today.year + 1)
+            except ValueError:
+                # Handle leap year birthday in a non-leap year
+                next_birthday = birth_date.replace(year=today.year + 1, day=28)
+        else:
+            next_birthday = birth_date_this_year
+
+        days_until_birthday = (next_birthday.date() - today.date()).days
+
+        if days_until_birthday == 0:
+            birthday_countdown.value = "Happy Birthday! 🎉"
+        else:
+            birthday_countdown.value = f"{days_until_birthday} days"
+
         page.update()
 
     def handle_date_pick(e):
@@ -72,6 +97,9 @@ def main(page: ft.Page):
                     ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                     age_months,
                     age_days,
+                    ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+                    ft.Text("DAYS UNTIL NEXT BIRTHDAY", size=14),
+                    birthday_countdown,
                 ]
             )
         )
