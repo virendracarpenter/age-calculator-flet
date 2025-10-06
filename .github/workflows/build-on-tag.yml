@@ -53,21 +53,7 @@ jobs:
         run: |
           flet pack src/main.py --verbose --yes
 
-      # Step 6: Rename the AppImage to include version in the filename
-      - name: Rename AppImage
-        if: matrix.target == 'linux'
-        run: |
-          mv build/linux/*.AppImage build/linux/age-calculator-${{ github.ref_name }}.AppImage || true
-
-      # Step 7: Upload Linux Artifact
-      - name: Upload Linux Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.target }}-build-artifact
-          path: build/${{ matrix.target }}
-          if-no-files-found: error
-
-      # Step 8: Upload AppImage to GitHub Releases
+      # Step 6: Upload AppImage to GitHub Releases
       - name: Upload AppImage to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
