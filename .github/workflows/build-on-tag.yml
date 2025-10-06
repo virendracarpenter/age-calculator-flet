@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [apk]
 
     steps:
       # Step 1: Checkout the repository
@@ -22,24 +25,31 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12.8"
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
+      # Step 3: Install Flet CLI
+      - name: Install flet-cli
         run: |
           python -m pip install --upgrade pip
-          pip install .
+          pip install flet-cli==0.27.5
 
-      # Step 4: Build the package
-      - name: Build the package
+      # Step 4: Build the APK using Flet
+      - name: Build APK with Flet
         run: |
-          rm -rf build
-          flet pack src/main.py
+          flet build ${{ matrix.target }} --verbose --build-number=1 --build-version=1.0.0
 
-      # Step 5: Upload the built package as an artifact
-      - name: Upload artifact
-        uses: softprops/action-gh-release@v2
+      # Step 5: Rename the APK to include version in the filename
+      - name: Rename APK
+        if: matrix.target == 'apk'
+        run: |
+          TAG_VERSION=${GITHUB_REF##*/}
+          mv build/apk/*.apk build/apk/age-calculator-${TAG_VERSION}.apk
+
+      # Step 6: Upload the APK as a workflow artifact
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4.3.4
         with:
-          files: dist/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ matrix.target }}-build-artifact
+          path: build/${{ matrix.target }}/
+          if-no-files-found: error
+          overwrite: false
