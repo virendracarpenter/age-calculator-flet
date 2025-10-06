@@ -21,6 +21,24 @@ def main(page: ft.Page):
     age_months = ft.Text("--", size=32)
     age_days = ft.Text("--", size=32)
 
+    #To save the page as a image
+    def share_action(e):
+        '''
+        page=e.control.page
+        y=page.window.top
+        x=page.window.left
+        w=page.window.width
+        h=page.window.height
+
+        screen=ImageGrab.grab(
+            bbox=(x,y,w+x,h+y)
+        )
+        t=str("age_card")
+        img_loc=f"/age-calculator-flet/folder/{t}.png"
+        screen.save(img_loc)
+        '''
+        page.update()
+
     def update_age(birth_date):
         today = datetime.now()
         delta = relativedelta(today, birth_date)
@@ -88,6 +106,17 @@ def main(page: ft.Page):
 
     # Main layout
     page.add(
+        ft.Row(
+            alignment=ft.MainAxisAlignment.END,
+            controls=[
+                ft.Button(
+                    "Share with others",
+                    icon=ft.Icons.SHARE,
+                    tooltip="Share",
+                    on_click=share_action
+                )
+            ]
+        ),
         ft.Column(
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=40,
@@ -99,7 +128,7 @@ def main(page: ft.Page):
                     "Select Birth Date",
                     icon=ft.Icons.CALENDAR_MONTH,
                     on_click=open_date_picker,
-                ),
+                )
             ]
         ),
         ft.Container(
