@@ -10,7 +10,6 @@ authors = [
 dependencies = [
   "flet==0.26.0",
   "python-dateutil==2.9.0.post0",
-  "pyinstaller",
 ]
 
 [tool.flet]
