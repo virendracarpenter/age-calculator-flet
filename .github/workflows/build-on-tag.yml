@@ -33,7 +33,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install flet-cli==0.27.5
 
-      # Step 4: Build the APK using Flet
+      # Step 4: Accept Android Licenses (required for CI)
+      - name: Accept Android Licenses
+        run: yes | flutter doctor --android-licenses
+
+      # Step 5: Build the APK using Flet
       - name: Build APK with Flet
         run: |
           flet build ${{ matrix.target }} --verbose --build-number=1 --build-version=1.0.0
