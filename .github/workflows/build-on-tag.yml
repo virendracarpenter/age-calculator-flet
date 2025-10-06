@@ -26,17 +26,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.12.8"
 
       # Step 3: Install Flet CLI
       - name: Install flet-cli
         run: |
           python -m pip install --upgrade pip
-          pip install flet-cli # Use the latest stable version
+          pip install flet-cli==0.27.5
 
-      # Step 4: Run 'flet build' once to install Flutter/Android SDK
+      # Step 4: Install Flutter/Android SDK using 'flet doctor'
       - name: Install build prerequisites
-        run: flet build ${{ matrix.target }} --dry-run
+        run: flet doctor
 
       # Step 5: Accept Android Licenses
       - name: Accept Android Licenses
@@ -45,7 +45,7 @@ jobs:
       # Step 6: Build the APK using Flet
       - name: Build APK with Flet
         run: |
-          flet build ${{ matrix.target }} --verbose --build-number=${{ github.run_number }} --build-version=${{ github.ref_name }}
+          flet build ${{ matrix.target }} --verbose --build-number=1 --build-version=1.0.0
 
       # Step 7: Rename the APK to include version in the filename
       - name: Rename APK
