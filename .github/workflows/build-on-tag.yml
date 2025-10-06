@@ -26,13 +26,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12.8"
+          python-version: "3.12"
 
       # Step 3: Install Flet CLI
       - name: Install flet-cli
         run: |
           python -m pip install --upgrade pip
-          pip install flet-cli==0.27.5
+          pip install flet-cli
 
       # Step 4: Install Flutter/Android SDK using 'flet doctor'
       - name: Install build prerequisites
