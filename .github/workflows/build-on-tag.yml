@@ -53,12 +53,11 @@ jobs:
         run: |
           flet pack src/main.py --verbose --yes
 
-      # Step 6: Upload AppImage to GitHub Releases
-      - name: Upload AppImage to GitHub Releases
-
+      # Step 6: Upload Linux Executable to GitHub Releases
+      - name: Upload Linux Executable to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          files: build/linux/age-calculator-${{ github.ref_name }}.AppImage
+          files: dist/age-calculator-test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -103,6 +102,6 @@ jobs:
       - name: Upload APK to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          files: build/android/*.apk
+          files: build/apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
