@@ -65,34 +65,41 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Setup Python
       - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      # Step 3: Install Java (required for Android build)
       - name: Install Java (for Android build)
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
 
+      # Step 4: Install Android SDK
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Uninstall flet and flet-cli, then install latest Flet prerelease and certifi (match .bat)
+      # Step 5: Uninstall flet and flet-cli, then install latest Flet prerelease and certifi
+      - name: Uninstall flet and flet-cli, then install latest Flet prerelease and certifi
         run: |
           python -m pip install --upgrade pip
           pip uninstall -y flet flet-cli
           pip install "flet[all]" certifi --upgrade --pre
 
+      # Step 6: Build APK with Flet
       - name: Build APK with Flet
         run: |
           export FLET_EXTRA_MODULES=certifi
           flet build apk --verbose --no-rich-output
 
+      # Step 7: Upload APK to GitHub Releases
       - name: Upload APK to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
