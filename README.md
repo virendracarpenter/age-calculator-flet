@@ -25,15 +25,12 @@ Follow these steps to set up and run the Age Calculator application locally on y
 - Python **3.9+** installed
 - Recommended: Use a **virtual environment (venv)** to manage project dependencies
 
-### 📂 Step 1: Clone Repository (or Save Files)the 
+### ⚙️ Step 1: Set up the Environment
 
-Create Project Directory:
+Create Virtual Eenvirnoment:
 ```bash
-cd age-calculator
-pip install .
+python -m venv .venv
 ```
-
-### ⚙️ Step 2: Set up the Environment
 
 Activate the Virtual Environment:
 
@@ -57,48 +54,26 @@ Install Dependencies:
 pip install .
 ```
 
+### 📂 Step 2: Clone Repository
+
+1) Fork the Repository
+
+2) Clone using this command 
+```bash
+git clone https://github.com/Username/age-calculator-flet.git
+```
+
+
 ### ▶️ Step 3: Run the Application
 
 Run in a **native desktop window**:
 ```bash
-flet run main.py
+flet run 
 ```
 Run as a **web app**:
 ```bash
-flet run --web main.py
+flet run --web 
 ```
-👉 The application will start in **hot reload mode**, meaning any saved changes to `main.py` will automatically update the running app instance.
-
-## ⚠️ Troubleshooting Common Issues
-
-| Issue | Description | Solution |
-|-------|-------------|----------|
-| **`command not found: flet`** | Flet CLI is not in your system's PATH | Ensure you have activated the virtual environment (Step 2) before running `flet run` |
-| **`ImportError: No module named 'dateutil'`** | Dependency installation failed or environment inactive | Run `pip install -r requirements.txt` again while the venv is active |
-| **App won't update (Hot Reload)** | Changes not reflecting in running app | Make sure you’re using `flet run main.py`. If issue persists, stop app (`Ctrl+C`) and restart |
-| **`page.update()` errors** | Runtime errors related to updating controls | If running as web app, check browser console for detailed error messages |
-
----
-
-## 🛠️ Configuration Notes
-
-Since this is a standalone **Flet** application, there are no separate config files. All settings are controlled in **`main.py`**:
-
-- **Theme**:  
-  Material You theme is set using:
-  ```python
-  page.theme = ft.Theme(color_scheme_seed=ft.Colors.DEEP_PURPLE)
-  ```
-  Change `ft.Colors.DEEP_PURPLE` to another Flet color constant to customize.
-
-- **Window Size**:  
-  The application window size is fixed with:
-  ```python
-  page.window_width = 400
-  page.window_height = 600
-  ```
-  Adjust values as needed.
-
 ---
 
 ## 📸 Screenshots
