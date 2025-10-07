@@ -49,18 +49,16 @@ Activate the Virtual Environment:
   .venv\Scripts\Activate.ps1
   ```
 
-Install Dependencies:
-```bash
-pip install .
-```
-
 ### 📂 Step 2: Clone Repository
 
-1) Fork the Repository
-
-2) Clone using this command 
+1. Fork the Repository
+2. Clone using this command
 ```bash
-git clone https://github.com/Username/age-calculator-flet.git
+git clone https://github.com/virendracarpenter/age-calculator-flet.git
+```
+3. Install Dependencies
+```bash
+pip install .
 ```
 
 
