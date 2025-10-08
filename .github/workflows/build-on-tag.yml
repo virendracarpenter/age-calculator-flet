@@ -3,12 +3,12 @@
 name: Build and Release on Tag
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - "v*.*.*"
+  release:
+    types: [published]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 env:
   BUILD_NUMBER: 1
@@ -22,9 +22,6 @@ env:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target: [linux]
 
     steps:
       # Step 1: Checkout code
@@ -32,10 +29,10 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Setup Python
-      - name: Setup Python 3.12.8
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12.8
+          python-version: ${{ env.PYTHON_VERSION }}
 
       # Step 3: Install flet-cli and pyinstaller
       - name: Install flet-cli and pyinstaller
@@ -117,6 +114,12 @@ jobs:
           name: linux-exe
           path: ./release-assets
 
+      - name: Rename Linux build folder
+        run: |
+          if [ -d "./release-assets/main" ]; then
+            mv ./release-assets/main ./release-assets/app-linux-release
+          fi
+
       - name: Download Android APK Artifact
         uses: actions/download-artifact@v4
         with:
@@ -126,8 +129,9 @@ jobs:
       - name: Upload All Artifacts to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.release.tag_name || github.ref_name }}
           files: |
-            release-assets/main
+            release-assets/app-linux-release
             release-assets/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
