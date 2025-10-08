@@ -18,7 +18,7 @@ env:
   UV_NO_PROGRESS: 1
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -53,13 +53,12 @@ jobs:
         run: |
           flet pack src/main.py --verbose --yes
 
-      # Step 6: Upload Linux Executable to GitHub Releases
-      - name: Upload Linux Executable to GitHub Releases
-        uses: softprops/action-gh-release@v2
+      # Step 6: Upload Linux Executable as workflow artifact
+      - name: Upload Linux Executable as Artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: dist/main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: linux-exe
+          path: dist/main
 
   build-apk:
     runs-on: ubuntu-latest
@@ -98,10 +97,35 @@ jobs:
           export FLET_EXTRA_MODULES=certifi
           flet build apk --verbose --no-rich-output
 
-      # Step 7: Upload APK to GitHub Releases
-      - name: Upload APK to GitHub Releases
+      # Step 7: Upload APK as workflow artifact
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/apk/app-release.apk
+          
+  # Job: Upload all artifacts to a single GitHub Release
+  upload-release:
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-apk]
+    steps:
+      - name: Download Linux Executable Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-exe
+          path: ./release-assets
+
+      - name: Download Android APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: ./release-assets
+
+      - name: Upload All Artifacts to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          files: build/apk/app-release.apk
+          files: |
+            release-assets/main
+            release-assets/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
