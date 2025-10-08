@@ -4,6 +4,8 @@ name: Build and Release on Tag
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*.*.*"
   workflow_dispatch:
@@ -103,7 +105,7 @@ jobs:
         with:
           name: android-apk
           path: build/apk/app-release.apk
-          
+
   # Job: Upload all artifacts to a single GitHub Release
   upload-release:
     runs-on: ubuntu-latest
