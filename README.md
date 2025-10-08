@@ -25,7 +25,16 @@ Follow these steps to set up and run the Age Calculator application locally on y
 - Python **3.9+** installed
 - Recommended: Use a **virtual environment (venv)** to manage project dependencies
 
-### ⚙️ Step 1: Set up the Environment
+### 📂 Step 1: Clone Repository
+
+1. Fork the Repository
+2. Clone using this command
+```bash
+git clone https://github.com/virendracarpenter/age-calculator-flet.git
+cd age-calculator-flet
+```
+
+### ⚙️ Step 2: Set up the Environment
 
 Create Virtual Eenvirnoment:
 ```bash
@@ -49,14 +58,7 @@ Activate the Virtual Environment:
   .venv\Scripts\Activate.ps1
   ```
 
-### 📂 Step 2: Clone Repository
-
-1. Fork the Repository
-2. Clone using this command
-```bash
-git clone https://github.com/virendracarpenter/age-calculator-flet.git
-```
-3. Install Dependencies
+Install Dependencies
 ```bash
 pip install .
 ```
