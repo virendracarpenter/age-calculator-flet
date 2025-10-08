@@ -112,26 +112,26 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: linux-exe
-          path: ./release-assets
+          path: ./release-assets/linux
 
-      - name: Rename Linux build folder
+      - name: Rename Linux executable to app-linux-release
         run: |
-          if [ -d "./release-assets/main" ]; then
-            mv ./release-assets/main ./release-assets/app-linux-release
+          if [ -f "release-assets/linux/main" ]; then
+            mv release-assets/linux/main release-assets/linux/app-linux-release
           fi
 
       - name: Download Android APK Artifact
         uses: actions/download-artifact@v4
         with:
           name: android-apk
-          path: ./release-assets
+          path: ./release-assets/android
 
       - name: Upload All Artifacts to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name || github.ref_name }}
           files: |
-            release-assets/app-linux-release
-            release-assets/app-release.apk
+            release-assets/linux/app-linux-release
+            release-assets/android/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
