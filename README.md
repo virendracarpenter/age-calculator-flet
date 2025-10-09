@@ -17,13 +17,64 @@ A modern age calculator Android app built with Python and Flet Framework featuri
 - GitHub integration button
 - Responsive layout
 
-## 📦 Devlopment Installation
+## 📦 Devlopment Instructions
+
+Follow these steps to set up and run the Age Calculator application locally on your machine .
+
+### ✅ Prerequisites
+- Python **3.9+** installed
+- Recommended: Use a **virtual environment (venv)** to manage project dependencies
+
+### 📂 Step 1: Clone Repository
+
+1. Fork the Repository
+2. Clone using this command
 ```bash
 git clone https://github.com/virendracarpenter/age-calculator-flet.git
 cd age-calculator-flet
-pip install .
-flet run
 ```
+
+### ⚙️ Step 2: Set up the Environment
+
+Create Virtual Eenvirnoment:
+```bash
+python -m venv .venv
+```
+
+Activate the Virtual Environment:
+
+- **macOS / Linux**:
+  ```bash
+  source .venv/bin/activate
+  ```
+
+- **Windows (Command Prompt)**:
+  ```bash
+  .venv\Scripts\activate.bat
+  ```
+
+- **Windows (PowerShell)**:
+  ```bash
+  .venv\Scripts\Activate.ps1
+  ```
+
+Install Dependencies
+```bash
+pip install .
+```
+
+
+### ▶️ Step 3: Run the Application
+
+Run in a **native desktop window**:
+```bash
+flet run 
+```
+Run as a **web app**:
+```bash
+flet run --web 
+```
+---
 
 ## 📸 Screenshots
 
