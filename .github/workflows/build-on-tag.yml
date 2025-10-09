@@ -1,0 +1,137 @@
+# This workflow builds the app and uploads the artifact to github releases whenever a new version tag(e.g., v1.0.0) is pushed to the main branch.
+
+name: Build and Release on Tag
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  BUILD_NUMBER: 1
+  BUILD_VERSION: 1.0.0
+  PYTHON_VERSION: 3.12.8
+  FLET_CLI_VERSION: 0.27.5
+  PYTHONUTF8: 1
+  FLET_CLI_NO_RICH_OUTPUT: 1
+  UV_NO_PROGRESS: 1
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # Step 3: Install flet-cli and pyinstaller
+      - name: Install flet-cli and pyinstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install flet-cli==$FLET_CLI_VERSION pyinstaller
+
+      # Step 4: Patch for linux build (install required system dependencies)
+      - name: Patch for linux build
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev libmpv2
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libmpv.so /usr/lib/libmpv.so.1 || true
+
+      # Step 5: Pack the Linux app using Flet
+      - name: Flet Pack Linux
+        run: |
+          flet pack src/main.py --verbose --yes
+
+      # Step 6: Upload Linux Executable as workflow artifact
+      - name: Upload Linux Executable as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-exe
+          path: dist/main
+
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # Step 3: Install Java (required for Android build)
+      - name: Install Java (for Android build)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      # Step 4: Install Android SDK
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      # Step 5: Uninstall flet and flet-cli, then install latest Flet prerelease and certifi
+      - name: Uninstall flet and flet-cli, then install latest Flet prerelease and certifi
+        run: |
+          python -m pip install --upgrade pip
+          pip uninstall -y flet flet-cli
+          pip install "flet[all]" certifi --upgrade --pre
+
+      # Step 6: Build APK with Flet
+      - name: Build APK with Flet
+        run: |
+          export FLET_EXTRA_MODULES=certifi
+          flet build apk --verbose --no-rich-output
+
+      # Step 7: Upload APK as workflow artifact
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/apk/app-release.apk
+
+  # Job: Upload all artifacts to a single GitHub Release
+  upload-release:
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-apk]
+    steps:
+      - name: Download Linux Executable Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-exe
+          path: ./release-assets/linux
+
+      - name: Rename Linux executable to app-linux-release
+        run: |
+          if [ -f "release-assets/linux/main" ]; then
+            mv release-assets/linux/main release-assets/linux/app-linux-release
+          fi
+
+      - name: Download Android APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: ./release-assets/android
+
+      - name: Upload All Artifacts to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name || github.ref_name }}
+          files: |
+            release-assets/linux/app-linux-release
+            release-assets/android/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
