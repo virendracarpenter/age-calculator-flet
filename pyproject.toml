@@ -33,6 +33,7 @@ path = "src"
 [tool.uv]
 dev-dependencies = [
     "flet[all]==0.26.0",
+    "pyinstaller"
 ]
 
 [tool.poetry]
