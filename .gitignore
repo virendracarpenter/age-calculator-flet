@@ -64,3 +64,6 @@ Thumbs.db
 .coverage
 htmlcov/
 .pytest_cache/
+
+#asset files
+src/assets/age_cards/
