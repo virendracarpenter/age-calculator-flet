@@ -40,7 +40,6 @@ Now you can generate Age card image and share it on different social media platf
 <div>
     <img src="./media/home_screen.PNG" width="30%"/>
     <img src="./media/image_generate_screenshot.PNG" width="30%"/>
-    <img src="./media/social_media_screenshot.PNG" width="30%"/>
 </div>
 
 ### 👨‍💻 Contributor
