@@ -15,13 +15,13 @@ def main(page: ft.Page):
     page.window_width = 400
     page.window_height = 600
     page.window_resizable = False
-    page.auto_scroll = True
     page.scroll = True
 
     #Image generation variables
     result_text = ft.Text(value="", size=16)
     img_preview = ft.Image(width=400, fit= ft.ImageFit.CONTAIN)
     name_field = ft.TextField(label="Your Name", width= 300)
+    img_path = ""
 
     # State variables
     selected_date = datetime.now()
@@ -58,15 +58,20 @@ def main(page: ft.Page):
         out_path = generate_age_card_image(name_field.value, date_picker.value, output_path=f"src/assets/age_cards/age_card_{timestamp}.png")
         result_text.value = f"Generated: {out_path}"
         img_preview.src = out_path
+        global img_path
+        img_path = out_path
         page.open(image_display)
         page.update()
 
-    def on_share(e):
-        if not os.path.exists("src/assets/age_cards/age_card.png"):
+    def on_share(e, platform):
+        global img_path
+        image_path = "src/assets" + img_path
+        if not os.path.exists(image_path):
             result_text.value = "Please generate the image first."
             page.update()
             return
-        share_image(page, "src/assets/age_cards/age_card.png")
+        share_image(page, image_path, platform)
+        image_path = ""
 
     # Date picker configuration
     date_picker = ft.DatePicker(on_change=handle_date_pick)
@@ -103,11 +108,14 @@ def main(page: ft.Page):
     )
 
     image_display = ft.AlertDialog(
-        modal= True,
         title= ft.Text("Age Card"),
         content= img_preview,
         actions= [
-            ft.IconButton(icon= ft.Icons.SHARE_OUTLINED, on_click = on_share, tooltip= "Share"),
+            #ft.IconButton(icon= ft.Icons.SHARE_OUTLINED, on_click = on_share, tooltip= "Share"),
+            ft.ElevatedButton("Twitter", on_click= lambda e: on_share(e, platform="twitter")),
+            ft.ElevatedButton("WhatsApp", on_click= lambda e: on_share(e, platform="whatsapp")),
+            ft.ElevatedButton("Facebook", on_click= lambda e: on_share(e, platform="facebook")),
+            ft.ElevatedButton("Instagram", on_click= lambda e: on_share(e ,platform="instagram")),
             ft.IconButton(icon= ft.Icons.CLOSE , on_click = lambda e: page.close(image_display), tooltip= "Close")
         ]
         )
@@ -131,8 +139,8 @@ def main(page: ft.Page):
     
 
     # Main layout
-    page.add(
-        ft.Column(
+    page.add(ft.SafeArea(
+        ft.Column([ft.Column(
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=20,
             controls=[
@@ -152,6 +160,7 @@ def main(page: ft.Page):
             margin=ft.margin.only(bottom=30),
             content=ft.Row([github_button, capture_button], alignment= ft.MainAxisAlignment.CENTER)
         ),
-    )
+    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+    alignment=ft.VerticalAlignment.CENTER,)))
 
 ft.app(target=main, assets_dir= "src/assets")

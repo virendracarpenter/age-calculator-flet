@@ -16,6 +16,7 @@ A modern age calculator Android app built with Python and Flet Framework featuri
 - Clean minimalist UI
 - GitHub integration button
 - Responsive layout
+- 
 
 ## 📦 Devlopment Installation
 ```bash
@@ -31,3 +32,16 @@ flet run
     <img src="./media/screenshot1.png" width="30%"/>
     <img src="./media/screenshot2.png" width="30%"/>
 </div>
+
+## ✨ New Feature
+Now you can generate Age card image and share it on different social media platform
+
+### 📸 Screenshots
+<div>
+    <img src="./media/home_screen.PNG" width="30%"/>
+    <img src="./media/image_generate_screenshot.PNG" width="30%"/>
+    <img src="./media/social_media_screenshot.PNG" width="30%"/>
+</div>
+
+### 👨‍💻 Contributor
+Ashutosh Agarwal (https://github.com/Ashutosh-agarwal2004)

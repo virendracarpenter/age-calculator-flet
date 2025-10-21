@@ -8,12 +8,14 @@ import platform
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import math, random
 
-from PIL import Image, ImageDraw, ImageFont
-
 def generate_age_card_image(name, birthdate: date, template_path="src/assets/card_bg/template.png", output_path="src/assets/age_cards/age_card.png"):
+    """ Generates age card image"""
     # Load your background template
     img = Image.open(template_path).convert("RGBA")
     draw = ImageDraw.Draw(img)
+    icon_path = "src/assets/icon.png"
+    overlay_icon = Image.open(icon_path)
+    overlay_icon = overlay_icon.resize((100, 100))
 
     # Try to load fonts (fallback to default)
     try:
@@ -57,9 +59,11 @@ def generate_age_card_image(name, birthdate: date, template_path="src/assets/car
 
     # Label section below
     draw_shadow_text(f"{name}'s journey continues...", (center_x - 240, 650), font=font_small, fill=(60, 60, 60))
+    
+    #Uncomment below line to add icon on generated image
+    #img.paste(overlay_icon, (0, 980))
 
     img.save(output_path)
-    print(f"✅ Card saved as {output_path}")
 
     return output_path[10:]
 
@@ -67,47 +71,42 @@ def generate_age_card_image(name, birthdate: date, template_path="src/assets/car
 # ======================================================
 # 2️⃣ FUNCTION — Share image (Works on Web & Android)
 # ======================================================
-def share_image(page: ft.Page, image_path: str):
+def share_image(page: ft.Page, image_path: str, media: str):
     """
-    For Web → uses navigator.share()
-    For Android → uses Intent via shell command
-    For Desktop → opens image location
+    Share an image across platforms
     """
+
     system = platform.system().lower()
+    abs_path = os.path.abspath(image_path)
 
-    if page.web:  # Flet Web build
-        js_code = f"""
-        if (navigator.canShare) {{
-            fetch("{page.origin}/{image_path}")
-              .then(r => r.blob())
-              .then(blob => {{
-                const file = new File([blob], "age_card.png", {{type: "image/png"}});
-                navigator.share({{
-                    files: [file],
-                    title: "My Age Card",
-                    text: "Check out my Age Card!",
-                }});
-              }})
-              .catch(err => alert("Sharing failed: " + err));
-        }} else {{
-            alert("Your browser does not support direct sharing.");
-        }}
-        """
-        page.eval_js(js_code)
-
-    elif "android" in system:
+    # Handle Android
+    if "android" in system:
         try:
-            os.system(f'am start -a android.intent.action.SEND -t "image/png" -e android.intent.extra.STREAM "file://{os.path.abspath(image_path)}"')
+            os.system(
+                f'adb shell am start -a android.intent.action.SEND '
+                f'-t "image/png" '
+                f'-e android.intent.extra.STREAM "file://{abs_path}" '
+                f'--grant-read-uri-permission'
+            )
         except Exception as e:
-            print("Error launching share intent:", e)
+            print("Error launching Android share intent:", e)
 
+    # 1️⃣ Handle Web Build
     else:
-        # For Windows/macOS/Linux — open folder
-        path = os.path.abspath(image_path)
-        if system == "windows":
-            os.startfile(path)
-        elif system == "darwin":
-            os.system(f"open {os.path.dirname(path)}")
-        else:
-            os.system(f"xdg-open {os.path.dirname(path)}")
+        media = media.lower()
 
+        if media == "twitter":
+            url = "https://twitter.com/compose/tweet"
+        elif media == "whatsapp":
+            url = "https://web.whatsapp.com/"
+        elif media == "facebook":
+            url = "https://www.facebook.com/"
+        elif media == "instagram":
+            url = "https://www.instagram.com/"
+        elif media == "threads":
+            url = "https://www.threads.net/"
+        else:
+            url = "https://example.com"
+
+    # Works on both Web and Desktop
+    page.launch_url(url)
